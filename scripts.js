@@ -817,8 +817,7 @@
   }
 
   function showWin() {
-    winSummaryEl.textContent =
-      "Solved in " + formatTime(elapsedSeconds) + " \u00B7 6\u00D76";
+    winSummaryEl.textContent = "Solved in " + formatTime(elapsedSeconds);
     winEl.hidden = false;
     playAgainBtn.focus();
   }

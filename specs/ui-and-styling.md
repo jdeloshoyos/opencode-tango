@@ -260,7 +260,7 @@ Reuse the base result-dialog pattern:
 Suggested content:
 
 - Title: **"You solved it!"**
-- Subtitle: **"Solved in MM:SS · 6×6"** (optional attempts/clues detail).
+- Subtitle: **"Solved in MM:SS"** (the board size is fixed, so it is not shown).
 - Button: **"New game"**.
 
 ## 10. Status bar behavior
