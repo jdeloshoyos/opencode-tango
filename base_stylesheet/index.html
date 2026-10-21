@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Minesweeper</title>
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+  <main class="game">
+    <div class="topbar">
+      <h1 class="title">Minesweeper</h1>
+      <button id="new-game" class="btn btn--ghost" type="button">New game</button>
+    </div>
+
+    <div class="status">
+      <span class="status__group">
+        <span class="status__item">
+          <span class="status__label">Mines left</span>
+          <span id="mine-counter" class="status__value">--</span>
+        </span>
+        <span class="status__item">
+          <span class="status__label">Time</span>
+          <span id="timer" class="status__value">00:00:00</span>
+        </span>
+      </span>
+      <span id="difficulty-label" class="status__label"></span>
+    </div>
+
+    <div class="board-wrap">
+      <div id="board" class="board" aria-label="Minesweeper board"></div>
+    </div>
+  </main>
+
+  <div id="result" class="overlay" hidden>
+    <div class="dialog dialog--result" role="dialog" aria-modal="true" aria-labelledby="result-title">
+      <h2 id="result-title" class="dialog__title"></h2>
+      <p id="result-summary" class="dialog__subtitle"></p>
+      <button id="play-again" class="btn btn--primary" type="button">Play again</button>
+    </div>
+  </div>
+
+  <div id="difficulty" class="overlay" hidden>
+    <div class="dialog" role="dialog" aria-modal="true" aria-labelledby="difficulty-title">
+      <h2 id="difficulty-title" class="dialog__title">Choose a difficulty</h2>
+      <p class="dialog__intro">
+        Pick a board size and mine count. Your first click is always safe.
+      </p>
+      <div id="difficulty-options" class="dialog__options"></div>
+    </div>
+  </div>
+
+  <script src="script.js"></script>
+</body>
+</html>

@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Tango</title>
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+  <main class="game">
+    <div class="topbar">
+      <h1 class="title">Tango</h1>
+      <div class="topbar__actions">
+        <button id="reset-game" class="btn btn--ghost" type="button">Reset</button>
+        <button id="new-game" class="btn btn--primary" type="button">New game</button>
+      </div>
+    </div>
+
+    <div class="status">
+      <span class="status__group">
+        <span class="status__item">
+          <span class="status__label">Remaining</span>
+          <span id="remaining" class="status__value">--</span>
+        </span>
+        <span class="status__item">
+          <span class="status__label">Time</span>
+          <span id="timer" class="status__value">00:00</span>
+        </span>
+      </span>
+      <span id="status-message" class="status__label" aria-live="polite"></span>
+    </div>
+
+    <div class="board-wrap">
+      <div id="board" class="board" role="grid" aria-label="Tango puzzle board"></div>
+    </div>
+  </main>
+
+  <div id="win" class="overlay" hidden>
+    <div class="dialog dialog--result" role="dialog" aria-modal="true"
+         aria-labelledby="win-title">
+      <h2 id="win-title" class="dialog__title is-won">You solved it!</h2>
+      <p id="win-summary" class="dialog__subtitle"></p>
+      <button id="play-again" class="btn btn--primary" type="button">New game</button>
+    </div>
+  </div>
+
+  <script src="scripts.js"></script>
+</body>
+</html>
