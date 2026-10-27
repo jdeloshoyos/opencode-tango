@@ -33,6 +33,10 @@
 
   const RESULT_DELAY_MS = 600;
 
+  // Best time persists across sessions: localStorage["tango.stats"] =
+  // { "bestTimeSeconds": <integer> }.
+  const BEST_TIME_KEY = "tango.stats";
+
   const KEY = (r, c) => r + "," + c;
   const PARSE = (k) => k.split(",").map(Number);
 
@@ -637,6 +641,7 @@
   const resetGameBtn = document.getElementById("reset-game");
   const winEl = document.getElementById("win");
   const winSummaryEl = document.getElementById("win-summary");
+  const winBestEl = document.getElementById("win-best");
   const playAgainBtn = document.getElementById("play-again");
 
   function buildBoard() {
@@ -816,8 +821,63 @@
     winEl.hidden = true;
   }
 
+  // ---- Best time (localStorage) ----
+
+  function loadBestTime() {
+    try {
+      const raw = window.localStorage.getItem(BEST_TIME_KEY);
+      if (!raw) return null;
+      const parsed = JSON.parse(raw);
+      const seconds = parsed ? parsed.bestTimeSeconds : null;
+      return Number.isFinite(seconds) && seconds >= 0 ? seconds : null;
+    } catch (err) {
+      return null;
+    }
+  }
+
+  function saveBestTime(seconds) {
+    try {
+      window.localStorage.setItem(
+        BEST_TIME_KEY,
+        JSON.stringify({ bestTimeSeconds: seconds })
+      );
+      return true;
+    } catch (err) {
+      return false;
+    }
+  }
+
+  function setBestLine(text, isNewBest) {
+    if (text === null) {
+      winBestEl.textContent = "";
+      winBestEl.classList.remove("is-new-best");
+      winBestEl.hidden = true;
+      return;
+    }
+    winBestEl.textContent = text;
+    winBestEl.classList.toggle("is-new-best", isNewBest);
+    winBestEl.hidden = false;
+  }
+
   function showWin() {
     winSummaryEl.textContent = "Solved in " + formatTime(elapsedSeconds);
+
+    const best = loadBestTime();
+    if (best === null) {
+      // No record yet. Persist this solve; if storage is unavailable, skip the
+      // best-time line rather than claiming a best that cannot be kept.
+      if (saveBestTime(elapsedSeconds)) {
+        setBestLine("New best time!", true);
+      } else {
+        setBestLine(null);
+      }
+    } else if (elapsedSeconds < best) {
+      saveBestTime(elapsedSeconds);
+      setBestLine("New best time!", true);
+    } else {
+      setBestLine("Current best time: " + formatTime(best), false);
+    }
+
     winEl.hidden = false;
     playAgainBtn.focus();
   }

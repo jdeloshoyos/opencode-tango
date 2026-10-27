@@ -71,6 +71,7 @@ Minimal, semantic, no inline logic:
          aria-labelledby="win-title">
       <h2 id="win-title" class="dialog__title is-won">You solved it!</h2>
       <p id="win-summary" class="dialog__subtitle"></p>
+      <p id="win-best" class="dialog__subtitle" hidden></p>
       <button id="play-again" class="btn btn--primary" type="button">New game</button>
     </div>
   </div>
@@ -110,6 +111,8 @@ const CELL_MAX = 72;
 const EDGE_GAP = 4; // must match the CSS `--edge-gap` token
 
 const RESULT_DELAY_MS = 600; // pause before showing win overlay
+
+const BEST_TIME_KEY = "tango.stats"; // { "bestTimeSeconds": <integer> }
 ```
 
 > `EDGE_GAP` is used only for cell-size arithmetic in `updateCellSize()`; the
@@ -122,7 +125,8 @@ const RESULT_DELAY_MS = 600; // pause before showing win overlay
 - `key(r, c)` — `"r,c"`.
 - `parseKey(k)` — `[r, c]` (if needed).
 - Cached DOM references: `boardEl`, `remainingEl`, `timerEl`, `statusMsgEl`,
-  `newGameBtn`, `resetGameBtn`, `winEl`, `winSummaryEl`, `playAgainBtn`.
+  `newGameBtn`, `resetGameBtn`, `winEl`, `winSummaryEl`, `winBestEl`,
+  `playAgainBtn`.
 
 ## 4. Python → JavaScript mapping
 
@@ -156,6 +160,8 @@ const RESULT_DELAY_MS = 600; // pause before showing win overlay
 - `grid: (number|null)[][]` — 6×6 player state.
 - `won: boolean`.
 - Timer state: `timerId`, `startTime`, `elapsedSeconds`, `timerRunning`.
+- Best time (persisted): `localStorage["tango.stats"]` =
+  `{ "bestTimeSeconds": <integer> }` — see §8.1.
 
 `Map` is chosen for clues to mirror the Python sparse dicts and to allow
 `has`/`get`/`delete`/`set` during reduction. Grids remain 2-D arrays for fast
@@ -281,6 +287,22 @@ formatTime(s): MM:SS with zero-padding (minutes may exceed 59)
 Timer starts as soon as a puzzle is displayed (after `newPuzzle`/`resetPuzzle`
 render the valid board), as specified in `functional.md` §8.7. `resetTimer()` is
 called before `startTimer()` so each new/reset game begins at `00:00`.
+
+### 8.1 Best-time persistence
+
+- Storage: `localStorage["tango.stats"]` = `{ "bestTimeSeconds": <integer> }`.
+- `loadBestTime()` — parse the key; return the numeric seconds, or `null` if
+  absent, invalid, or storage is unavailable.
+- `saveBestTime(seconds)` — write the JSON; return `true`/`false` for
+  success/failure (never throws).
+- `setBestLine(text, isNewBest)` — set `#win-best` text, toggle `.is-new-best`,
+  and toggle `hidden`; passing `null` hides the line.
+- `showWin()` flow:
+  - `best = loadBestTime()`.
+  - `best === null` → persist `elapsedSeconds`; if the write succeeds show
+    "New best time!" (green), otherwise omit the line (storage unavailable).
+  - `elapsedSeconds < best` → persist and show "New best time!" (green).
+  - Otherwise → show "Current best time: MM:SS" (normal style); no write.
 
 ## 9. Generation flow (async yield)
 

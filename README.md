@@ -18,6 +18,8 @@ visual style is adapted from [`base_stylesheet/`](base_stylesheet/).
   immediately.
 - **Timed** — the clock starts as soon as the board appears and stops when you
   solve it.
+- **Best time** — your fastest solve is remembered in the browser
+  (`localStorage`), and the win dialog celebrates a new record.
 - **Clean, responsive UI** — dark theme, SVG sun/moon symbols, and a win dialog
   consistent with the reference stylesheet.
 
@@ -75,7 +77,8 @@ rules. Some cells are **given** (darker background) and cannot be changed.
 | **New game** button / `N` | Generate a new puzzle |
 
 The status bar shows how many cells remain and the elapsed time. When the board
-is complete and valid, a "You solved it!" dialog appears with your time.
+is complete and valid, a "You solved it!" dialog appears with your time — plus
+whether you set a **new best time** (or the current best, if you didn't).
 
 ### Rules
 

@@ -28,10 +28,12 @@ runs client-side in `scripts.js`.
 - Gameplay: placing/clearing symbols, locked given cells, real-time rule
   validation, win detection, reset, and new puzzle.
 - Timer, progress readout, SVG-based sun/moon symbols, and a win overlay.
+- Best solve time persisted locally in the browser (`localStorage`).
 
 **Out of scope**
 
-- Backend, accounts, persistence, or syncing.
+- Backend, accounts, cloud persistence, or cross-device syncing. (The best time
+  is persisted only in the local browser — see §8.9.)
 - Difficulty levels — the board is always 6×6.
 - Hints, "show solution", scoring, leaderboards, audio, or multiplayer.
 - Localization.
@@ -329,6 +331,33 @@ necessarily equals it.
 | `R` / `r` key | `resetPuzzle()`. |
 | Win overlay "New game" | `newPuzzle()` and hide overlay. |
 
+### 8.9 Best time (localStorage)
+
+The game tracks a **single global best solve time** across all puzzles. It is
+stored only in the browser, under the `localStorage` key **`tango.stats`**, as a
+small JSON object:
+
+```json
+{ "bestTimeSeconds": 17 }
+```
+
+- **When a game is won**, compare `elapsedSeconds` (the timer value at the
+  moment of winning) with the stored best:
+  - No stored best, or `elapsedSeconds < best` → **new best**. Persist the new
+    value and show an extra dialog line **"New best time!"** in green.
+  - Otherwise (equal or slower) → show **"Current best time: MM:SS"** in the
+    normal subtitle style. The stored value is left unchanged.
+- An **equal** time is not a new best (only a strictly faster time counts).
+- The best time is updated only on a completed, valid solve (win).
+- The value persists across page reloads and sessions.
+- Storage access is wrapped in `try/catch`: if `localStorage` is unavailable
+  (e.g., blocked or private mode), the game still works and the best-time line
+  is simply omitted.
+
+Helper functions in `scripts.js`: `loadBestTime()` (returns seconds or `null`),
+`saveBestTime(seconds)` (returns whether the write succeeded), and
+`setBestLine(text, isNewBest)` (updates the dialog line).
+
 ## 9. Generation latency and UI state
 
 Generation is synchronous and may briefly block the main thread. To keep the UI
@@ -395,3 +424,15 @@ These are deliberate parts of the reference behavior; do not "fix" them silently
 - **AC-F16** Rapid clicks during generation do not create inconsistent state.
 - **AC-F17** If generation exhausts `MAX_ATTEMPTS`, the app shows an error and
   remains usable (no uncaught exception).
+
+### Best time
+
+- **AC-F18** On a first-ever win (no stored best), the dialog shows
+  "New best time!" in green and stores `bestTimeSeconds` in `tango.stats`.
+- **AC-F19** A win faster than the stored best shows "New best time!" in green
+  and updates the stored value.
+- **AC-F20** A win equal to or slower than the stored best shows
+  "Current best time: MM:SS" (not green) and leaves the stored value unchanged.
+- **AC-F21** The best time survives a page reload (same origin).
+- **AC-F22** If `localStorage` is unavailable, the win dialog still appears and
+  the best-time line is omitted without errors.

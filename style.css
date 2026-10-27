@@ -290,3 +290,9 @@ body {
   opacity: 0.7;
   font-variant-numeric: tabular-nums;
 }
+
+.dialog__subtitle.is-new-best {
+  color: #51cf66;
+  opacity: 1;
+  font-weight: 700;
+}

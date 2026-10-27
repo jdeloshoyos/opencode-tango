@@ -68,7 +68,8 @@ body
 <div#win.overlay[hidden]>
     └── .dialog.dialog--result
         ├── h2#win-title.dialog__title.is-won     ("You solved it!")
-        ├── p#win-summary.dialog__subtitle        (time / clue summary)
+        ├── p#win-summary.dialog__subtitle        ("Solved in MM:SS")
+        ├── p#win-best.dialog__subtitle[hidden]   (best-time line)
         └── button#play-again.btn.btn--primary    ("New game")
 ```
 
@@ -252,7 +253,8 @@ Reuse the base result-dialog pattern:
 
 - Hidden by default (`hidden` attribute).
 - On win: set `#win-summary` to include the elapsed time (e.g., `Solved in
-  01:23`), remove `hidden`, and focus `#play-again`.
+  01:23`), update the best-time line (see below), remove `hidden`, and focus
+  `#play-again`.
 - Title `#win-title` uses `.dialog__title.is-won` (green, per base).
 - `#play-again` triggers `newPuzzle()` and hides the overlay.
 - The board remains visible behind the dimmed backdrop and is locked.
@@ -261,7 +263,22 @@ Suggested content:
 
 - Title: **"You solved it!"**
 - Subtitle: **"Solved in MM:SS"** (the board size is fixed, so it is not shown).
+- Best-time line (`#win-best`), one of:
+  - **"New best time!"** in green (`.is-new-best`) when the solve sets a new
+    best (or is the first-ever solve).
+  - **"Current best time: MM:SS"** in the normal subtitle style otherwise.
+  - Omitted (element hidden) when `localStorage` is unavailable.
 - Button: **"New game"**.
+
+The green line reuses the base win color and removes the subtitle dimming:
+
+```css
+.dialog__subtitle.is-new-best {
+  color: #51cf66;
+  opacity: 1;
+  font-weight: 700;
+}
+```
 
 ## 10. Status bar behavior
 
